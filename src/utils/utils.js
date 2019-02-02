@@ -1,70 +1,12 @@
 import moment from 'moment'
-import _ from 'lodash'
 import Taro from '@tarojs/taro'
-import { userLogin } from '../service/accountDao';
 
 
 export const DESHMOBILE = '0755-23919844'
 
-export let loginUser = null
-
-/**微信登录code */
-export let loginWxCode = null
 
 /**系统信息 */
 let systemInfo = {}
-
-
-export function setLoginUser(user) {
-    loginUser = user
-}
-
-export function toLoginPage() {
-    loginUser = null
-    Taro.navigateTo({ url: '/pages/Login/index' })
-}
-
-export function setLoginWxCode(code) {
-    logMsg('登录code', code)
-    // loginWxCode = code
-}
-
-export function reLogin(e, dispatch, frompage, code) {
-    logMsg('用户信息', e)
-    Taro.showLoading({ title: '正在登录...' })
-    let params = {
-        code: code,
-        encrypted_data: e.currentTarget.encryptedData,
-        iv: e.currentTarget.iv
-    }
-    wxLogin(params, dispatch, frompage)
-
-
-}
-
-function wxLogin(params, dispatch, frompage) {
-    logMsg('登陆信息', params)
-    userLogin(params, ret => {
-        Taro.hideLoading()
-
-        if (ret.status === 'need_register') {
-            let url = `/pages/BindMobile/index?${urlEncode(ret)}`
-            Taro.navigateTo({ url })
-        } else if (ret.status === 'login_success') {
-            showToast('登陆成功')
-
-            dispatch({ type: 'Mine/effectsUser', loginUser: ret })
-            if (frompage === 'loginpage') {
-                Taro.navigateBack()
-            }
-
-        }
-    }, err => {
-        showToast(`登录失败${JSON.stringify(err)}`)
-       
-        Taro.hideLoading()
-    })
-}
 
 
 
